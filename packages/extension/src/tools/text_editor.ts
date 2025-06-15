@@ -8,7 +8,7 @@ import { ConfirmationUI } from '../utils/confirmation_ui';
 export const textEditorSchema = z.object({
   command: z.enum(['view', 'str_replace', 'create', 'insert', 'undo_edit']),
   path: z.string().describe('File path to operate on'),
-  view_range: z.tuple([z.number(), z.number()]).optional()
+  view_range: z.array(z.number()).length(2).optional()
     .describe('Optional [start, end] line numbers for view command (1-indexed, -1 for end)'),
   old_str: z.string().optional()
     .describe('Text to replace (required for str_replace command)'),
@@ -535,7 +535,9 @@ export async function textEditorTool(params: TextEditorParams): Promise<TextEdit
 
   switch (params.command) {
     case 'view': {
-      return await editor.viewFile(params.path, params.view_range);
+      // Convert array to tuple for backwards compatibility
+      const viewRange = params.view_range ? [params.view_range[0], params.view_range[1]] as [number, number] : undefined;
+      return await editor.viewFile(params.path, viewRange);
     }
     case 'str_replace': {
       if (!params.old_str || !params.new_str) {

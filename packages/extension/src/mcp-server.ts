@@ -1,7 +1,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol';
-import { CallToolRequestSchema, CallToolResult, ErrorCode, ListResourcesRequestSchema, ListToolsRequestSchema, ListToolsResult, McpError, ReadResourceRequestSchema, Tool } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, CallToolResult, ErrorCode, ListResourcesRequestSchema, ListToolsRequestSchema, ListToolsResult, McpError, ReadResourceRequestSchema, Tool, ServerRequest, ServerNotification } from '@modelcontextprotocol/sdk/types.js';
 import dedent from 'dedent';
 import * as vscode from 'vscode';
 import { DiagnosticSeverity } from 'vscode';
@@ -30,6 +30,19 @@ import { textEditorSchema, textEditorTool } from './tools/text_editor';
 export const extensionName = 'vscode-mcp-server';
 export const extensionDisplayName = 'VSCode MCP Server';
 
+/**
+ * Transform JSON Schema to draft 2020-12
+ * This is needed because zod-to-json-schema generates draft-07 schemas
+ */
+function toJsonSchema2020(schema: any): any {
+  return {
+    ...schema,
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    // Remove additionalProperties: false as it can cause issues with Claude Code
+    additionalProperties: undefined
+  };
+}
+
 interface RegisteredTool {
   description?: string;
   inputZodSchema?: AnyZodObject;
@@ -45,7 +58,7 @@ export class ToolRegistry {
     name: string,
     description: string,
     inputSchema: Tool['inputSchema'],
-    cb: (args: unknown, extra: RequestHandlerExtra) => ReturnType<ToolCallback<any>>,
+    cb: (args: unknown, extra: RequestHandlerExtra<ServerRequest, ServerNotification>) => ReturnType<ToolCallback<any>>,
   ) {
     if (this._registeredTools[name]) {
       throw new Error(`Tool ${name} is already registered`);
@@ -95,15 +108,26 @@ export class ToolRegistry {
     });
 
     this.server.setRequestHandler(ListToolsRequestSchema, (): ListToolsResult => ({
-      tools: Object.entries(this._registeredTools).map(([name, tool]): Tool => ({
-        name,
-        description: tool.description,
-        inputSchema: tool.inputSchema
-          ?? (tool.inputZodSchema && (zodToJsonSchema(tool.inputZodSchema, {
+      tools: Object.entries(this._registeredTools).map(([name, tool]): Tool => {
+        let inputSchema: Tool['inputSchema'];
+        
+        if (tool.inputSchema) {
+          inputSchema = tool.inputSchema;
+        } else if (tool.inputZodSchema) {
+          const generatedSchema = zodToJsonSchema(tool.inputZodSchema, {
             strictUnions: true,
-          }) as Tool["inputSchema"]))
-          ?? { type: "object" as const },
-      })),
+          });
+          inputSchema = toJsonSchema2020(generatedSchema) as Tool['inputSchema'];
+        } else {
+          inputSchema = toJsonSchema2020({ type: "object" }) as Tool['inputSchema'];
+        }
+        
+        return {
+          name,
+          description: tool.description,
+          inputSchema,
+        };
+      }),
     }));
 
     this.server.setRequestHandler(
@@ -120,7 +144,7 @@ export class ToolRegistry {
         if (tool.inputSchema) {
           // Skip validation because raw inputschema tool is used by another tool provider
           const args = request.params.arguments;
-          const cb = tool.callback as (args: unknown, extra: RequestHandlerExtra) => ReturnType<ToolCallback<any>>;
+          const cb = tool.callback as (args: unknown, extra: RequestHandlerExtra<ServerRequest, ServerNotification>) => ReturnType<ToolCallback<any>>;
           return await Promise.resolve(cb(args, extra));
         } else if (tool.inputZodSchema) {
           const parseResult = await tool.inputZodSchema.safeParseAsync(

@@ -90,7 +90,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.7.0",
+    "@modelcontextprotocol/sdk": "^1.12.3",
     "dedent": "^1.5.3",
     "diff": "^7.0.0",
     "esbuild": "^0.25.1",
