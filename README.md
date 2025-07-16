@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/acomagu-vscode-as-mcp-server-badge.png)](https://mseep.ai/app/acomagu-vscode-as-mcp-server)
+
 # VSCode as MCP Server
 
 [Marketplace](https://marketplace.visualstudio.com/items?itemName=acomagu.vscode-as-mcp-server)
