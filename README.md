@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=acomagu&project=vscode-as-mcp-server&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 # VSCode as MCP Server
 
 [Marketplace](https://marketplace.visualstudio.com/items?itemName=acomagu.vscode-as-mcp-server)
