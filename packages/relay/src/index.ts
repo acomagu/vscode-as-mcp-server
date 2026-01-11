@@ -15,7 +15,9 @@ const RETRY_INTERVAL = 1000; // 1 second
 
 class MCPRelay {
   private mcpServer: McpServer;
-  constructor(readonly serverUrl: string) {
+  private disabledTools: Set<string>;
+  constructor(readonly serverUrl: string, disabledTools: string[] = []) {
+    this.disabledTools = new Set(disabledTools);
     this.mcpServer = new McpServer({
       name: 'vscode-as-mcp',
       version: '0.0.1',
@@ -37,6 +39,8 @@ class MCPRelay {
         } as JSONRPCRequest));
         const parsedResponse = resp as JSONRPCResponse;
         tools = parsedResponse.result.tools as any[];
+        // Filter out disabled tools
+        tools = tools.filter(tool => !this.disabledTools.has(tool.name));
       } catch (err) {
         return;
       }
@@ -78,7 +82,9 @@ class MCPRelay {
         tools = parsedResponse.result.tools as any[];
       } catch (err) {
         console.error(`Failed to fetch tools list: ${(err as Error).message}`);
-        return { tools: cachedTools as any[] };
+        // Filter out disabled tools from cached tools
+        const filteredCachedTools = cachedTools.filter(tool => !this.disabledTools.has(tool.name));
+        return { tools: filteredCachedTools as any[] };
       }
 
       // Update cache
@@ -88,7 +94,9 @@ class MCPRelay {
         console.error(`Failed to cache tools response: ${(cacheErr as Error).message}`);
       }
 
-      return { tools };
+      // Filter out disabled tools
+      const filteredTools = tools.filter(tool => !this.disabledTools.has(tool.name));
+      return { tools: filteredTools };
     });
 
     this.mcpServer.server.setRequestHandler(CallToolRequestSchema, async (request): Promise<CallToolResult> => {
@@ -195,20 +203,24 @@ class MCPRelay {
 function parseArgs() {
   const args = process.argv.slice(2);
   let serverUrl = 'http://localhost:60100';
+  const disabledTools: string[] = [];
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--server-url' && i + 1 < args.length) {
       serverUrl = args[i + 1];
       i++;
+    } else if (args[i] === '--disable' && i + 1 < args.length) {
+      disabledTools.push(args[i + 1]);
+      i++;
     }
   }
 
-  return { serverUrl };
+  return { serverUrl, disabledTools };
 }
 
 try {
-  const { serverUrl } = parseArgs();
-  const relay = new MCPRelay(serverUrl);
+  const { serverUrl, disabledTools } = parseArgs();
+  const relay = new MCPRelay(serverUrl, disabledTools);
   await relay.start();
 } catch (err) {
   console.error(`Fatal error: ${(err as Error).message}`);
